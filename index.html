@@ -1,87 +1,40 @@
-
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>WebAR Mô Hình Máy Bay (GPS Radius 100m) - AR.js</title>
-    
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>WebAR Mô Hình Máy Bay - AR.js</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
   <body style="margin: 0px; overflow: hidden;">
     
-    <a-scene 
-      embedded 
-      vr-mode-ui="enabled: false" 
-      arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-scene embedded vr-mode-ui="enabled: false" arjs="sourceType: webcam; debugUIEnabled: false;">
       
       <a-assets>
         <a-asset-item id="bird-obj" src="./assets/11805_airplane_v2_L2.obj"></a-asset-item>
         <a-asset-item id="bird-mtl" src="./assets/11805_airplane_v2_L2.mtl"></a-asset-item>
       </a-assets>
       
-      <a-entity id="crab-entity">
+      <a-marker preset="hiro">
+        
         <a-obj-model 
           src="#bird-obj" 
-          mtl="#bird-mtl"
-          position="0 -1 -5" scale="0.05 0.05 0.05"
-          rotation="0 0 0">
+          mtl="#bird-mtl" 
+          position="0 0 0" 
+          scale="0.05 0.05 0.05" 
+          rotation="-90 0 0">
         </a-obj-model>
-      </a-entity>
+
+      </a-marker>
       
-      <a-camera gps-camera="gpsMinDistance: 5; alert: true;" rotation-reader></a-camera>
+      <a-entity camera></a-entity>
       
     </a-scene>
-
-    <script>
-      // Tọa độ mục tiêu cố định của bạn
-      const targetLat = 10.421209747684665;
-      const targetLng = 105.64382686321106;
-      const maxRadius = 100; // Bán kính 100 mét
-
-      // Hàm tính khoảng cách giữa 2 tọa độ GPS (Công thức Haversine)
-      function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371e3; // Bán kính Trái Đất tính bằng mét
-        const phi1 = lat1 * Math.PI / 180;
-        const phi2 = lat2 * Math.PI / 180;
-        const deltaPhi = (lat2 - lat1) * Math.PI / 180;
-        const deltaLambda = (lon2 - lon1) * Math.PI / 180;
-
-        const a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) +
-                  Math.cos(phi1) * Math.cos(phi2) *
-                  Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-        return R * c; // Trả về khoảng cách hệ mét
-      }
-
-      // Theo dõi vị trí thực tế của người dùng
-      window.addEventListener('gps-camera-update-position', (e) => {
-        const userLat = e.detail.position.latitude;
-        const userLng = e.detail.position.longitude;
-
-        // Tính khoảng cách từ người dùng tới tâm tọa độ của bạn
-        const distance = calculateDistance(userLat, userLng, targetLat, targetLng);
-        const crabEntity = document.querySelector('#crab-entity');
-
-        console.log(`Khoảng cách hiện tại tới tâm: ${distance.toFixed(2)} mét`);
-
-        if (distance <= maxRadius) {
-          // NẾU NẰM TRONG BÁN KÍNH 100M: Kích hoạt hiển thị con cua ngay tại tọa độ hiện tại của người dùng
-          // Điều này giúp giải quyết sai số lớn của GPS, người dùng không cần tìm kiếm mệt mỏi ngoài thực địa.
-          if (!crabEntity.hasAttribute('gps-entity-place')) {
-            crabEntity.setAttribute('gps-entity-place', `latitude: ${userLat}; longitude: ${userLng};`);
-            console.log("Đã kích hoạt mô hình con cua trong vùng 100m!");
-          }
-        } else {
-          // NẾU RA NGOÀI BÁN KÍNH 100M: Ẩn mô hình đi bằng cách xóa thuộc tính GPS
-          if (crabEntity.hasAttribute('gps-entity-place')) {
-            crabEntity.removeAttribute('gps-entity-place');
-            console.log("Bạn đã ra khỏi vùng kích hoạt 100m. Ẩn mô hình.");
-          }
-        }
-      });
-    </script>
   </body>
 </html>
+
+      
+     
+     
+          
